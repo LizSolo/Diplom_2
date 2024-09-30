@@ -1,0 +1,6 @@
+.idea/
+.venv/
+.build/
+.target/
+__pycache__/
+tests/__pycache__/
