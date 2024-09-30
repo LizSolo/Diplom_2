@@ -1,26 +1,15 @@
 import allure
 
-import allure
 from api_requests import ApiRequests
 from utils import generate_user_data
+from conftest import user_data
 from data import Urls, ResponseMessages
 
 class TestGetOrder:
     @allure.title("Проверка получения заказов конкретного пользователя")
-    def test_get_user_orders(self):
+    def test_get_user_orders(self, user_data):
         api_requests = ApiRequests()
-        email, password, name = generate_user_data()
-        payload = {
-            "email": email,
-            "password": password,
-            "name": name
-        }
-        response = api_requests.post(Urls.USER_REGISTER, json=payload)
-        response_data = response.json()
-        access_token = response_data['accessToken']
-        headers = {
-            "Authorization": access_token
-        }
+        email, password, name, headers = user_data
         ingredients_data = api_requests.get(Urls.INGREDIENTS)
         ingredient_first = ingredients_data.json()['data'][0]['_id']
         ingredient_second = ingredients_data.json()['data'][1]['_id']
@@ -31,8 +20,6 @@ class TestGetOrder:
         assert response_order.status_code == 200
         assert response_order.json()['success'] == True
         assert len(response_order.json()['orders']) == 1
-        # удалить пользователя
-        api_requests.delete(Urls.USER, headers=headers)
 
     @allure.title("Проверка получения заказов конкретного пользователя без авторизации")
     def test_get_orders_without_authorization(self):
